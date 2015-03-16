@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.zumero.cordova" version="0.2.3">
+    <name>Zumero</name>
+    <description>Zumero Sync Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>zumero,sqlite,sync</keywords>
+    <asset src="www/zumero.js" target="zumero.js" />
+
+    <engines>
+      <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <dependency id="com.zumero.plugins.sqlite" url="https://github.com/zumero/Cordova-SQLitePlugin" />
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Zumero">
+                <param name="ios-package" value="ZumeroPlugin"/>
+            </feature>
+        </config-file>
+        <header-file src="src/ios/ZumeroPlugin.h" />
+        <source-file src="src/ios/ZumeroPlugin.m" compiler-flags="-fno-objc-arc" />
+
+        <framework src="libz.dylib" />
+        <framework src="CFNetwork.framework" />
+        <framework src="src/ios/libs/ZumeroSync.framework" custom="true" />
+    </platform>
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Zumero">
+                <param name="android-package" value="com.zumero.cordova.ZumeroPlugin"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/ZumeroPlugin.java" target-dir="src/com/zumero/cordova" />
+        <source-file src="src/android/libs/zumero.jar" target-dir="libs" />
+
+        <source-file src="src/android/libs/armeabi/libzumero_client_api.so" target-dir="libs/armeabi" />
+        <source-file src="src/android/libs/armeabi/libzumero_jni.so" target-dir="libs/armeabi" />
+        <source-file src="src/android/libs/armeabi-v7a/libzumero_client_api.so" target-dir="libs/armeabi-v7a" />
+        <source-file src="src/android/libs/armeabi-v7a/libzumero_jni.so" target-dir="libs/armeabi-v7a" />
+        <source-file src="src/android/libs/arm64-v8a/libzumero_client_api.so" target-dir="libs/arm64-v8a" />
+        <source-file src="src/android/libs/arm64-v8a/libzumero_jni.so" target-dir="libs/arm64-v8a" />
+        <source-file src="src/android/libs/x86/libzumero_client_api.so" target-dir="libs/x86" />
+        <source-file src="src/android/libs/x86/libzumero_jni.so" target-dir="libs/x86" />
+        <source-file src="src/android/libs/x86_64/libzumero_client_api.so" target-dir="libs/x86_64" />
+        <source-file src="src/android/libs/x86_64/libzumero_jni.so" target-dir="libs/x86_64" />
+    </platform>
+</plugin>
