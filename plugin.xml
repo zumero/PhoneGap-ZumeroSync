@@ -8,7 +8,7 @@
     <asset src="www/zumero.js" target="zumero.js" />
 
     <engines>
-      <engine name="cordova" version=">=3.0.0" />
+      <engine name="cordova" version=">=3.3.0" />
     </engines>
 
     <dependency id="com.zumero.plugins.sqlite" url="https://github.com/zumero/Cordova-SQLitePlugin" />
@@ -23,6 +23,7 @@
         <source-file src="src/ios/ZumeroPlugin.m" compiler-flags="-fno-objc-arc" />
 
         <framework src="libz.dylib" />
+        <framework src="libsqlite3.dylib" />
         <framework src="CFNetwork.framework" />
         <framework src="src/ios/libs/ZumeroSync.framework" custom="true" />
     </platform>
