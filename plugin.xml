@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="com.zumero.cordova" version="0.2.3">
+        id="com.zumero.cordova" version="2.0.0">
     <name>Zumero</name>
     <description>Zumero Sync Plugin</description>
     <license>Apache 2.0</license>
@@ -25,7 +25,8 @@
         <framework src="libz.dylib" />
         <framework src="libsqlite3.dylib" />
         <framework src="CFNetwork.framework" />
-        <framework src="src/ios/libs/ZumeroSync.framework" custom="true" />
+
+        <dependency id="com.zumero.sync.ios" url="https://github.com/zumero/ZumeroSyncFramework" />
     </platform>
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
