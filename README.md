@@ -1,7 +1,6 @@
 # Zumero PhoneGap Plugin for iOS and Android
 
 This plugin allows applications built on PhoneGap
-(just "PhoneGap" from here on out, for lack of a naming-neutral pronoun)
 to synchronize with [Zumero for SQL Server (ZSS)][zss].
 
 
