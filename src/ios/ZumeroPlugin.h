@@ -8,6 +8,7 @@
 @interface ZumeroPlugin : CDVPlugin
 
 - (void) sync:(CDVInvokedUrlCommand *)command;
+- (void) sync2:(CDVInvokedUrlCommand *)command;
 - (void) syncQuarantine:(CDVInvokedUrlCommand *)command;
 - (void) quarantineSinceLastSync:(CDVInvokedUrlCommand *)command;
 - (void) deleteQuarantine:(CDVInvokedUrlCommand *)command;

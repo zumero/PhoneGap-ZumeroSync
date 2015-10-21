@@ -30,11 +30,14 @@ import java.lang.reflect.Method;
 
 import com.zumero.ZumeroClient;
 import com.zumero.ZumeroException;
+import com.zumero.SyncProgressListener;
 
+import android.webkit.WebView;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.app.Activity;
 
 public class ZumeroPlugin extends CordovaPlugin {
 
@@ -120,6 +123,20 @@ public class ZumeroPlugin extends CordovaPlugin {
 			});
 			return true;
 		}
+		else if ("sync2".equals(action)) {
+			//This operation happens on the background.
+			this.worker.getHandler().post(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						sync2(args, callbackContext);
+					} catch (Exception e) {
+						Log.e("ZumeroPhonegap","Exception: ", e );
+					}
+				}
+			});
+			return true;
+		}
 		else if ("syncQuarantine".equals(action)) {
 			//This operation happens on the background.
 			this.worker.getHandler().post(new Runnable() {
@@ -162,6 +179,14 @@ public class ZumeroPlugin extends CordovaPlugin {
 			});
 			return true;
 		}
+		else if ("cancel".equals(action)) {
+			try {
+				Cancel(args, callbackContext);
+			} catch (Exception e) {
+				Log.e("ZumeroPhonegap","Exception: ", e );
+			}
+			return true;
+		}
 		else
 			return super.execute(action, args, callbackContext);
 	}
@@ -191,7 +216,45 @@ public class ZumeroPlugin extends CordovaPlugin {
 					args.isNull(4) ? null : args.getString(4), //scheme
 					args.isNull(5) ? null : args.getString(5), //user
 					args.isNull(6) ? null : args.getString(6)  //password
-					);
+				);
+		}
+		catch (Exception e) {
+			HandleException(e, callbackContext); return;
+		}
+		callbackContext.success();
+	}
+
+	private void sync2(JSONArray args, final CallbackContext callbackContext) throws JSONException {
+		
+		try {
+				SyncProgressListener progress_callback = null;
+				if (!args.isNull(7)) //Callback function
+				{
+					final WebView wv = this.webView;
+					final double callback_token = args.getDouble(7);
+					final Activity act = this.cordova.getActivity();
+					progress_callback = new SyncProgressListener()
+					{
+						@Override
+						public void onSyncProgress(final int cancellation_token, final int phase, final long bytesSoFar, final long bytesTotal)
+						{
+							act.runOnUiThread(new Runnable() {
+								public void run() {
+									wv.loadUrl("javascript:zumero_global_progress_callback_function(" + callback_token + ", " + cancellation_token + ", " + phase + ", " + bytesSoFar + ", " + bytesTotal + ");");
+								}
+							});
+						}
+					};
+				}
+				ZumeroClient.sync(cordova.getActivity().getApplicationContext(),
+					args.getString(0), //full path
+					args.isNull(1) ? null : args.getString(1), //Encryption key 
+					args.getString(2), //URL
+					args.getString(3), //DBfile
+					args.isNull(4) ? null : args.getString(4), //scheme
+					args.isNull(5) ? null : args.getString(5), //user
+					args.isNull(6) ? null : args.getString(6),  //password
+					progress_callback);
 		}
 		catch (Exception e) {
 			HandleException(e, callbackContext);
@@ -241,6 +304,18 @@ public class ZumeroPlugin extends CordovaPlugin {
 					args.getString(0), //full path
 					args.isNull(1) ? null : args.getString(1), //Encryption key
 					args.getLong(2)	//quarantineID
+					);
+		}
+		catch (Exception e) {
+			HandleException(e, callbackContext);
+		}
+	}
+
+	private void Cancel(JSONArray args, final CallbackContext callbackContext) throws JSONException {
+		try {
+			int cancel_token = args.getInt(0);
+			ZumeroClient.cancel(
+					cancel_token
 					);
 		}
 		catch (Exception e) {
