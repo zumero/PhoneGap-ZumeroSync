@@ -1,0 +1,22 @@
+{
+    "version": "2.2.2",
+    "name": "com.zumero.cordova",
+    "cordova_name": "Zumero",
+    "description": "Zumero Sync Plugin",
+    "license": "Apache 2.0",
+    "keywords": [
+        "zumero",
+        "sqlite",
+        "sync"
+    ],
+    "platforms": [
+        "ios",
+        "android"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.3.0"
+        }
+    ]
+}
