@@ -1,5 +1,5 @@
 /*
-** Copyright 2013-2015 Zumero, LLC
+** Copyright 2013-2016 Zumero, LLC
 ** All rights reserved. 
  */
 
@@ -18,6 +18,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.PluginResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +45,7 @@ public class ZumeroPlugin extends CordovaPlugin {
 	//The worker thread, so that operations can run in the background.
 	private ZumeroWorkerThread worker = null;
 	private CountDownLatch lock = new CountDownLatch(1);
+	private CallbackContext jsSender = null;
 		
 	public ZumeroPlugin() {		
 	 	super();
@@ -187,6 +189,12 @@ public class ZumeroPlugin extends CordovaPlugin {
 			}
 			return true;
 		}
+		else if ("setupJSPassthrough".equals(action))
+		{
+			jsSender = callbackContext;
+			sendJavascript(";");
+			return true;
+		}
 		else
 			return super.execute(action, args, callbackContext);
 	}
@@ -230,7 +238,6 @@ public class ZumeroPlugin extends CordovaPlugin {
 				SyncProgressListener progress_callback = null;
 				if (!args.isNull(7)) //Callback function
 				{
-					final WebView wv = this.webView;
 					final double callback_token = args.getDouble(7);
 					final Activity act = this.cordova.getActivity();
 					progress_callback = new SyncProgressListener()
@@ -240,7 +247,7 @@ public class ZumeroPlugin extends CordovaPlugin {
 						{
 							act.runOnUiThread(new Runnable() {
 								public void run() {
-									wv.loadUrl("javascript:zumero_global_progress_callback_function(" + callback_token + ", " + cancellation_token + ", " + phase + ", " + bytesSoFar + ", " + bytesTotal + ");");
+									sendJavascript("zumero_global_progress_callback_function(" + callback_token + ", " + cancellation_token + ", " + phase + ", " + bytesSoFar + ", " + bytesTotal + ");");
 								}
 							});
 						}
@@ -321,6 +328,13 @@ public class ZumeroPlugin extends CordovaPlugin {
 		catch (Exception e) {
 			HandleException(e, callbackContext);
 		}
+	}
+
+	private void sendJavascript(String code)
+	{
+		PluginResult pr = new PluginResult(PluginResult.Status.OK, code);
+		pr.setKeepCallback(true);
+		jsSender.sendPluginResult(pr);
 	}
 	
 	//These two classes handle the background thread.

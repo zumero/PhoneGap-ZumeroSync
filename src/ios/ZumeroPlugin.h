@@ -1,6 +1,6 @@
 //
 //  ZumeroPlugin.h
-//  Copyright 2013-2015 Sourcegear, LLC dba Zumero
+//  Copyright 2013-2016 Sourcegear, LLC dba Zumero
 //
 
 #import <Cordova/CDV.h>
@@ -12,6 +12,6 @@
 - (void) syncQuarantine:(CDVInvokedUrlCommand *)command;
 - (void) quarantineSinceLastSync:(CDVInvokedUrlCommand *)command;
 - (void) deleteQuarantine:(CDVInvokedUrlCommand *)command;
-
+- (void) setupJSPassthrough:(CDVInvokedUrlCommand *)command;
 
 @end

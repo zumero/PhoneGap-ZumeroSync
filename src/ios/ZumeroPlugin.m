@@ -1,6 +1,6 @@
 //
 //  ZumeroPlugin.m
-//  Copyright 2013-2015 Sourcegear, LLC dba Zumero
+//  Copyright 2013-2016 Sourcegear, LLC dba Zumero
 //
 
 #import "ZumeroPlugin.h"
@@ -38,6 +38,12 @@
 }
 
 #pragma mark - sync
+
+
+- (void) setupJSPassthrough:(CDVInvokedUrlCommand *)command
+{
+	// no-op here, needed for Android
+}
 
 - (void) sync:(CDVInvokedUrlCommand *)command
 {
@@ -86,7 +92,7 @@
 			cb = ^(int cancellationToken, int phase, zumero_int64 bytesSoFar, zumero_int64 bytesTotal, void * object) 
 			{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                [me writeJavascript:[NSString stringWithFormat:@"zumero_global_progress_callback_function(%d, %d, %d, %lld, %lld)", [callbackToken intValue], cancellationToken, phase, bytesSoFar, bytesTotal] ];
+                [self.commandDelegate evalJs:[NSString stringWithFormat:@"zumero_global_progress_callback_function(%d, %d, %d, %lld, %lld)", [callbackToken intValue], cancellationToken, phase, bytesSoFar, bytesTotal] ];
                 });
                 
 			};

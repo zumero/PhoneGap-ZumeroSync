@@ -1,5 +1,5 @@
 /*
-** Copyright 2013-2015 Zumero, LLC
+** Copyright 2013-2016 Zumero, LLC
 ** All rights reserved. 
  */
 var zumero_global_progress_callbacks = {}
@@ -13,6 +13,13 @@ function zumero_global_progress_callback_function(callback_key, cancellation_tok
 
 cordova.define("cordova/plugin/zumero", function(require, exports, module) {
 	var exec = require('cordova/exec');
+
+	var win = function(message) {
+		eval(message);
+	};
+
+	exec(win, null, 'Zumero', 'setupJSPassthrough', []);
+
 	//The cordova module object.
 	var Zumero = function() {
 	};
