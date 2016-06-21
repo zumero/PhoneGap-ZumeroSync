@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.lang.reflect.Method;
 
 import com.zumero.ZumeroClient;
+import com.zumero.ZumeroClient.SyncDetails;
 import com.zumero.ZumeroException;
 import com.zumero.SyncProgressListener;
 
@@ -126,6 +127,20 @@ public class ZumeroPlugin extends CordovaPlugin {
 			return true;
 		}
 		else if ("sync2".equals(action)) {
+			//This operation happens on the background.
+			this.worker.getHandler().post(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						sync2(args, callbackContext);
+					} catch (Exception e) {
+						Log.e("ZumeroPhonegap","Exception: ", e );
+					}
+				}
+			});
+			return true;
+		}
+		else if ("sync3".equals(action)) {
 			//This operation happens on the background.
 			this.worker.getHandler().post(new Runnable() {
 				@Override
@@ -268,6 +283,54 @@ public class ZumeroPlugin extends CordovaPlugin {
 			return;
 		}
 		callbackContext.success();
+	}
+	
+	private void sync3(JSONArray args, final CallbackContext callbackContext) throws JSONException {
+
+		int syncId = -1;
+		
+		try {
+				SyncProgressListener progress_callback = null;
+				if (!args.isNull(7)) //Callback function
+				{
+					final double callback_token = args.getDouble(7);
+					final Activity act = this.cordova.getActivity();
+					progress_callback = new SyncProgressListener()
+					{
+						@Override
+						public void onSyncProgress(final int cancellation_token, final int phase, final long bytesSoFar, final long bytesTotal)
+						{
+							act.runOnUiThread(new Runnable() {
+								public void run() {
+									sendJavascript("javascript:zumero_global_progress_callback_function(" + callback_token + ", " + cancellation_token + ", " + phase + ", " + bytesSoFar + ", " + bytesTotal + ");");
+								}
+							});
+						}
+					};
+				}
+
+				String opts = args.isNull(8) ? null: args.getString(8);
+				SyncDetails d = new SyncDetails();
+				d.syncId = -1;
+
+				ZumeroClient.sync(cordova.getActivity().getApplicationContext(),
+					args.getString(0), //full path
+					args.isNull(1) ? null : args.getString(1), //Encryption key 
+					args.getString(2), //URL
+					args.getString(3), //DBfile
+					args.isNull(4) ? null : args.getString(4), //scheme
+					args.isNull(5) ? null : args.getString(5), //user
+					args.isNull(6) ? null : args.getString(6),  //password
+					opts, d,
+					progress_callback);
+
+				syncId = d.syncId;
+		}
+		catch (Exception e) {
+			HandleException(e, callbackContext);
+			return;
+		}
+		callbackContext.success(syncId);
 	}
 	
 	private void QuarantineSinceLastSync(JSONArray args, final CallbackContext callbackContext) throws JSONException {

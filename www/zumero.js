@@ -50,6 +50,20 @@ cordova.define("cordova/plugin/zumero", function(require, exports, module) {
 		}
 	}		
 
+	Zumero.prototype.sync3 = function(fullPath, encryptionKey, serverURL, dbFileName, scheme, user, password, jsOptions, progressCallback, syncSuccessCallback, syncErrorCallback) {
+               var random = Math.floor(Math.random() * 100000);
+		zumero_global_progress_callbacks[random] = progressCallback;
+		try {	
+			exec(syncSuccessCallback, syncErrorCallback, "Zumero", "sync3", [ fullPath, encryptionKey, serverURL, dbFileName, scheme, user, password, random, jsOptions ]);
+		}
+		catch (err) {
+			console.log("-----------------------  Caught Exception   -----------------------------------");
+			console.log(err);
+		}
+		finally {
+		}
+	}		
+
 	Zumero.prototype.quarantineSinceLastSync = function(fullPath, encryptionKey, successCallback, errorCallback) {
 		try {	
 			exec(function(arg) {

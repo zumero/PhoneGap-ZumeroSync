@@ -167,7 +167,7 @@ A Zumero-modified fork of the lite4cordova SQLite plugin can be found at
 method's "success" handler function, adding a "full path" parameter after the
 "message" parameter.  This is the path you'd use when synching.
 
-    var db = window.sqlitePlugin.openDatabase( {name: dbName},
+    var db = window.sqlitePlugin.openDatabase( {name: dbName, location: 'default'},
         function(msg, fullname) {
             // save for later
             myDbFilename = fullname;

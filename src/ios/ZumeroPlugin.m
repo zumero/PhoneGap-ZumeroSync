@@ -82,7 +82,6 @@
 	NSString *user = [command argumentAtIndex:5];
 	NSString *password = [command argumentAtIndex:6];
 	NSNumber *callbackToken = [command argumentAtIndex:7];
-    __block CDVPlugin * me = self;
     
 	dispatch_async(txqueue, ^{
 		NSError *err = nil;
@@ -102,6 +101,53 @@
 		CDVPluginResult* pluginResult = nil;
 		if (ok)
 			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+		else
+			pluginResult = [self errorResult:err];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+		});
+	});
+}
+
+- (void) sync3:(CDVInvokedUrlCommand *)command
+{
+	NSString *path = [command argumentAtIndex:0];
+	NSString *key = [command argumentAtIndex:1];
+	NSString *serverUrl = [command argumentAtIndex:2];
+	NSString *dbFileName = [command argumentAtIndex:3];
+	NSString *scheme = [command argumentAtIndex:4];
+	NSString *user = [command argumentAtIndex:5];
+	NSString *password = [command argumentAtIndex:6];
+	NSNumber *callbackToken = [command argumentAtIndex:7];
+	NSString *jsOptions = [command argumentAtIndex:8];
+    __block CDVPlugin * me = self;
+    
+	dispatch_async(txqueue, ^{
+		NSError *err = nil;
+		ZumeroProgressCallback cb = nil;
+		if (callbackToken != nil)
+		{
+			cb = ^(int cancellationToken, int phase, zumero_int64 bytesSoFar, zumero_int64 bytesTotal, void * object) 
+			{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                [self.commandDelegate evalJs:[NSString stringWithFormat:@"zumero_global_progress_callback_function(%d, %d, %d, %lld, %lld)", [callbackToken intValue], cancellationToken, phase, bytesSoFar, bytesTotal] ];
+                });
+                
+			};
+		}
+
+		int syncId = -1;
+        BOOL ok = [ZumeroSync Sync:path cipherKey:key serverUrl:serverUrl remote:dbFileName authSchemeJS:scheme user:user password:password callback:cb dataPointer:NULL optionsJS:jsOptions syncId:&syncId error:&err];
+		
+		CDVPluginResult* pluginResult = nil;
+		if (ok)
+		{
+			if (jsOptions && syncId >= 0)
+				pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:syncId];
+			else
+				pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+		}
 		else
 			pluginResult = [self errorResult:err];
 		
