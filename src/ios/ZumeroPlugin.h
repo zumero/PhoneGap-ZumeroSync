@@ -1,6 +1,6 @@
 //
 //  ZumeroPlugin.h
-//  Copyright 2013-2016 Sourcegear, LLC dba Zumero
+//  Copyright 2013-2017 Sourcegear, LLC dba Zumero
 //
 
 #import <Cordova/CDV.h>
