@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="com.zumero.cordova" version="3.0.1">
+        id="com.zumero.cordova" version="3.0.2">
     <name>Zumero</name>
     <description>Zumero Sync Plugin</description>
     <license>Apache 2.0</license>
